@@ -6,6 +6,7 @@
   <meta name="color-scheme" content="light dark" />
   <link rel="icon" href="data:," />
   <title>Shivya — Solving all diseases</title>
+  <link rel="preload" href="loop.mp4" as="video" type="video/mp4" fetchpriority="high" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap');
 
@@ -173,11 +174,20 @@
     (function () {
       var video = document.getElementById('cinematic-loop');
       var motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+      function tryPlay() {
+        if (motionQuery.matches) { video.pause(); return; }
+        var p = video.play();
+        if (p && p.catch) p.catch(function () {});
+      }
+      if (video.readyState >= 2) { tryPlay(); }
+      else {
+        video.addEventListener('canplay', tryPlay, { once: true });
+        try { video.load(); } catch (e) {}
+      }
       function syncMotion() {
         if (motionQuery.matches) video.pause();
-        else video.play().catch(function () {});
+        else tryPlay();
       }
-      syncMotion();
       if (motionQuery.addEventListener) motionQuery.addEventListener('change', syncMotion);
     }());
   </script>
