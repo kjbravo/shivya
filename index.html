@@ -132,6 +132,21 @@
       box-shadow: 0 0 0 7px rgba(6, 14, 11, .26);
     }
 
+    .locale {
+      position: absolute;
+      z-index: 2;
+      left: 0;
+      right: 0;
+      bottom: max(30px, env(safe-area-inset-bottom));
+      text-align: center;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: .42em;
+      text-transform: uppercase;
+      color: rgba(12, 20, 17, .42);
+      pointer-events: none;
+    }
+
     @media (max-width: 760px) {
       .aperture::after {
         background:
@@ -141,7 +156,7 @@
       video { object-position: 50% 50%; }
       .statement {
         align-items: flex-end;
-        padding: 0 22px max(38px, env(safe-area-inset-bottom));
+        padding: 0 22px max(84px, calc(env(safe-area-inset-bottom) + 46px));
       }
       h1 {
         font-size: clamp(4.5rem, 22.8vw, 7rem);
@@ -169,6 +184,7 @@
     <section class="statement" aria-labelledby="mission">
       <h1 id="mission"><span>Solving</span><span class="all">all</span><span class="diseases">diseases</span></h1>
     </section>
+    <div class="locale" aria-hidden="true">Palo Alto</div>
   </main>
   <script>
     (function () {
