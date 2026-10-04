@@ -120,6 +120,8 @@
     .sticky-nav { width: min(1180px, calc(100% - 40px)); margin: 0 auto; display: flex; gap: 4px; padding: 10px 0; overflow: hidden; }
     .nav-link { text-decoration: none; border: 0; background: transparent; color: var(--muted); padding: 8px 13px; font-family: "IBM Plex Mono", monospace; font-size: .76rem; white-space: nowrap; border-radius: 3px; transition: background .2s, color .2s; }
     .nav-link:hover, .nav-link.active { background: var(--ink); color: var(--paper); }
+    .home-link { margin-right: 8px; padding: 8px 16px 8px 0; border-right: 1px solid var(--line); color: var(--ink); font-family: "IBM Plex Mono", monospace; font-size: .76rem; text-decoration: none; white-space: nowrap; transition: color .2s; }
+    .home-link:hover { color: var(--accent); }
 
     section { scroll-margin-top: 74px; padding: 88px 0; border-bottom: 1px solid var(--line); }
     .section-head { display: grid; grid-template-columns: 90px minmax(0, 1fr) minmax(240px, .62fr); gap: 28px; align-items: start; margin-bottom: 48px; }
@@ -170,6 +172,18 @@
     .funding-scope { margin-top: 36px; padding: 24px; display: grid; grid-template-columns: 160px 1fr; gap: 28px; background: var(--paper-2); }
     .funding-scope strong { color: var(--accent); font-size: 2rem; font-weight: 500; letter-spacing: -.04em; }
     .funding-scope p { margin: 0; color: var(--muted); }
+
+    .producer-ledger { border-top: 1px solid var(--line-strong); }
+    .producer-row { display: grid; grid-template-columns: 190px 100px minmax(0, 1fr); gap: 24px; padding: 20px 0; border-bottom: 1px solid var(--line); align-items: start; }
+    .producer-region { font-weight: 600; }
+    .producer-count { font-family: "IBM Plex Mono", monospace; color: var(--accent); font-size: .78rem; line-height: 1.45; }
+    .producer-row p { margin: 0; color: var(--muted); font-size: .9rem; }
+    .producer-row p strong { color: var(--ink); font-weight: 500; }
+    .producer-context { display: grid; grid-template-columns: 1fr 1fr; margin-top: 28px; border-top: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong); }
+    .producer-context p { margin: 0; padding: 22px 24px 22px 0; color: var(--muted); font-size: .9rem; }
+    .producer-context p + p { padding-left: 24px; border-left: 1px solid var(--line); }
+    .producer-context strong { color: var(--ink); font-weight: 600; }
+    .producer-closer { margin: 30px 0 0; font-size: clamp(1.35rem, 2.7vw, 2.15rem); line-height: 1.2; letter-spacing: -.025em; }
 
     .myth-banner { display: grid; grid-template-columns: .9fr 1.1fr; gap: 0; border: 1px solid var(--line-strong); margin-bottom: 44px; background: var(--panel); }
     .myth-old { padding: 28px; background: var(--paper-2); }
@@ -382,6 +396,7 @@
       .big-stat { align-items: flex-start; flex-direction: column; gap: 5px; }
       .sticky-nav { overflow: visible; flex-wrap: wrap; gap: 2px; padding: 6px 0; }
       .nav-link { padding: 5px 8px; font-size: .68rem; }
+      .home-link { margin-right: 2px; padding: 5px 10px 5px 0; font-size: .68rem; }
       section { padding: 64px 0; }
       .section-head { grid-template-columns: 1fr; gap: 10px; margin-bottom: 34px; }
       .section-deck { grid-column: auto; }
@@ -395,6 +410,10 @@
       .bottleneck-strip { grid-template-columns: 1fr; }
       .bottleneck-strip > div:nth-child(n) { border-left: 0; border-top: 1px solid var(--line); }
       .bottleneck-strip > div:first-child { border-top: 0; }
+      .producer-row { grid-template-columns: 1fr; gap: 6px; padding: 18px 0; }
+      .producer-context { grid-template-columns: 1fr; }
+      .producer-context p { padding: 18px 0; }
+      .producer-context p + p { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); }
       .myth-old, .myth-new { padding: 22px; }
       .funnel-tools { align-items: flex-start; flex-direction: column; }
       #funnelChart { display: none; }
@@ -423,6 +442,20 @@
   </style>
 </head>
 <body>
+  <div class="sticky-nav-wrap" aria-label="Section navigation">
+    <nav class="sticky-nav">
+      <a class="home-link" href="https://shivya.org" aria-label="Back to Shivya.org home">← Shivya.org</a>
+      <a class="nav-link active" href="#planet">01 Planet</a>
+      <a class="nav-link" href="#money">02 Money</a>
+      <a class="nav-link" href="#funnel">03 Pipeline</a>
+      <a class="nav-link" href="#information">04 Information</a>
+      <a class="nav-link" href="#bottlenecks">05 Bottlenecks</a>
+      <a class="nav-link" href="#producers">06 Producers</a>
+      <a class="nav-link" href="#leverage">07 Leverage</a>
+      <a class="nav-link" href="#sources">Sources</a>
+    </nav>
+  </div>
+
   <header class="hero page">
     <div class="hero-copy">
       <p class="eyebrow">A Humanity Defence Project — Human Health &amp; Longevity</p>
@@ -438,18 +471,6 @@
       <p class="board-note">Planet-scale burden meets a finite invention system. Every figure below keeps its year, scope and caveat attached.</p>
     </aside>
   </header>
-
-  <div class="sticky-nav-wrap" aria-label="Section navigation">
-    <nav class="sticky-nav">
-      <a class="nav-link active" href="#planet">01 Planet</a>
-      <a class="nav-link" href="#money">02 Money</a>
-      <a class="nav-link" href="#funnel">03 Pipeline</a>
-      <a class="nav-link" href="#information">04 Information</a>
-      <a class="nav-link" href="#bottlenecks">05 Bottlenecks</a>
-      <a class="nav-link" href="#leverage">06 Leverage</a>
-      <a class="nav-link" href="#sources">Sources</a>
-    </nav>
-  </div>
 
   <main class="page">
 
@@ -731,9 +752,49 @@
       </div>
     </section>
 
+    <section id="producers">
+      <div class="section-head">
+        <div class="section-num">06 / The producers</div>
+        <h2>The defense is produced in rooms, not pipelines.</h2>
+        <p class="section-deck">A census of the producing layer: 289 notable biomedical institutes across ~54 countries, compiled October 2026 from audited statements, public filings, and reported figures. ~ marks an estimate. Scale runs from ~$20M-a-year genomics shops to multi-billion-dollar research hospitals. <a class="cite" href="#source-22">[22]</a></p>
+      </div>
+      <div class="producer-ledger" aria-label="Biomedical institutes by region">
+        <article class="producer-row">
+          <div class="producer-region">North America</div>
+          <div class="producer-count">76</div>
+          <p>68 US (24 states + DC), 8 Canada. <strong>Anchors:</strong> NIH intramural (Bethesda); Broad Institute, Cambridge MA — $753M budget, 2024; St. Jude Children's Research Hospital, Memphis.</p>
+        </article>
+        <article class="producer-row">
+          <div class="producer-region">Europe</div>
+          <div class="producer-count">86</div>
+          <p>16 countries. <strong>Anchors:</strong> Francis Crick Institute, London — £246m income FY2024/25; EMBL-EBI, Hinxton; Wellcome Sanger Institute; MRC Laboratory of Molecular Biology.</p>
+        </article>
+        <article class="producer-row">
+          <div class="producer-region">Asia-Pacific</div>
+          <div class="producer-count">~69</div>
+          <p>10 countries/territories. <strong>Anchors:</strong> Chinese Academy of Medical Sciences / Peking Union Medical College, Beijing; Beijing Institute of Genomics, CAS; Changping Laboratory, Beijing.</p>
+        </article>
+        <article class="producer-row">
+          <div class="producer-region">Latin America</div>
+          <div class="producer-count">30</div>
+          <p>9 countries. <strong>Anchors:</strong> Oswaldo Cruz Foundation (Fiocruz), Rio de Janeiro; Instituto Butantan, São Paulo.</p>
+        </article>
+        <article class="producer-row">
+          <div class="producer-region">Africa &amp; Middle East</div>
+          <div class="producer-count">28</div>
+          <p>13 countries. <strong>Anchors:</strong> South African Medical Research Council, Cape Town; KEMRI-Wellcome Trust, Kilifi.</p>
+        </article>
+      </div>
+      <div class="producer-context">
+        <p><strong>Behind the rooms:</strong> ~58 funder entries (~45 unique) — government (NIH, ARPA-H, BARDA), philanthropy (Gates, Wellcome, HHMI, CZI, Simons), universities, and private nonprofits.</p>
+        <p><strong>~34 emerging players:</strong> Arc-style institutes (Arc Institute, Palo Alto), AI-led labs (Isomorphic Labs, London), and Focused Research Organizations (E11 Bio, Cultivarium) — new philanthropic and government initiatives outside the old funding ledgers.</p>
+      </div>
+      <p class="producer-closer">Who funds and runs the rooms decides what the map can produce.</p>
+    </section>
+
     <section id="leverage">
       <div class="section-head">
-        <div class="section-num">06 / Investment priorities</div>
+        <div class="section-num">07 / Investment priorities</div>
         <h2>The leverage points move decisive knowledge earlier.</h2>
         <p class="section-deck">The map suggests a sharper objective than “fund more drugs”: move decisive information earlier, before the largest sequential bets.</p>
       </div>
@@ -797,8 +858,9 @@
         <li id="source-19"><div><a href="https://globalsepsisalliance.org/news/2025/11/4/new-global-estimates-from-the-lancet-166-million-sepsis-cases-and-21-million-deaths" target="_blank" rel="noopener">GBD 2021 Global Sepsis Collaborators</a><small><em>The Lancet Global Health</em>, October 2025; very new modeled estimate.</small></div></li>
         <li id="source-20"><div><a href="https://social.desa.un.org/issues/ageing/news/new-world-social-report-calls-for-concrete-measures-to-support-an-ageing-world" target="_blank" rel="noopener">UN DESA — World Social Report 2023</a><small>People aged 65+ rising toward 1.6B by 2050.</small></div></li>
         <li id="source-21"><div><span>Carter et al. — UK cancer research funding analysis</span><small>Lung cancer share of UK cancer mortality versus research funding; bibliographic source named in the research brief.</small></div></li>
+        <li id="source-22"><div><span>Institutes census: 289-institute directory compiled October 2026 from audited financial statements, IRS filings, NIH RePORTER, and reported figures; ~ marks estimates; regional, funder, and emerging-player counts are counts of the compiled directory. Broad Institute budget from Wikipedia citing the institute (2024); Francis Crick Institute income from its audited annual report, year ended 31 March 2025.</span></div></li>
       </ol>
-      <p class="method">Built as a static evidence map on October 3, 2026 PDT. Population, mortality, morbidity and forecast figures are modeled estimates with uncertainty, not enumerated counts. The 2021 death and sepsis estimates are pandemic-distorted; 2019 and 2023 are preferred for normal-year trend framing where available. Monetary values are nominal current US dollars. Asterisks flag cross-year orientation ratios. Funnel values are cumulative from the cited transition probabilities and rounded to one decimal; 100 × .473 × .280 × .550 × .918 = 6.7. Pipeline counts and R&amp;D dollars are not interchangeable. Strategy cards are interpretations of the mapped information gaps, not measured effect-size claims.</p>
+      <p class="method">Built as a static evidence map on October 3, 2026 PDT. Last refined October 3, 2026 PDT — producers section added. Population, mortality, morbidity and forecast figures are modeled estimates with uncertainty, not enumerated counts. The 2021 death and sepsis estimates are pandemic-distorted; 2019 and 2023 are preferred for normal-year trend framing where available. Monetary values are nominal current US dollars. Asterisks flag cross-year orientation ratios. Funnel values are cumulative from the cited transition probabilities and rounded to one decimal; 100 × .473 × .280 × .550 × .918 = 6.7. Pipeline counts and R&amp;D dollars are not interchangeable. Strategy cards are interpretations of the mapped information gaps, not measured effect-size claims.</p>
     </section>
   </main>
 
