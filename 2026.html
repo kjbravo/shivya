@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:," />
+  <title>The Cure Machine — A Map</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --paper: #f7f6f1;
+      --paper-2: #ebe9e0;
+      --ink: #171815;
+      --muted: #5c5f56;
+      --line: #c8c7bc;
+      --line-strong: #8c8e84;
+      --accent: #e4512b;
+      --accent-soft: #f5d3c7;
+      --teal: #14756d;
+      --teal-soft: #cce4df;
+      --yellow: #e6b94a;
+      --yellow-soft: #f2e4b6;
+      --panel: #fffefa;
+      --shadow: 0 18px 50px rgba(31, 29, 21, .08);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #121411;
+        --paper-2: #1c1f1a;
+        --ink: #f2f0e7;
+        --muted: #a9aea3;
+        --line: #353a31;
+        --line-strong: #687064;
+        --accent: #ff7651;
+        --accent-soft: #552a20;
+        --teal: #5fc1b6;
+        --teal-soft: #173f3b;
+        --yellow: #f2c85e;
+        --yellow-soft: #4a3d1d;
+        --panel: #181b17;
+        --shadow: 0 18px 50px rgba(0, 0, 0, .28);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "IBM Plex Sans", sans-serif;
+      font-size: 16px;
+      line-height: 1.55;
+      text-rendering: optimizeLegibility;
+    }
+    button, a { font: inherit; }
+    a { color: inherit; }
+    button { color: inherit; }
+    ::selection { background: var(--yellow); color: #171815; }
+    .page { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+
+    .hero {
+      min-height: min(760px, calc(100svh - 34px));
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(280px, .92fr);
+      gap: 7vw;
+      align-items: center;
+      padding: 72px 0 58px;
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow, .section-num, .micro, .source-tag {
+      font-family: "IBM Plex Mono", monospace;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .eyebrow { color: var(--accent); font-size: .78rem; margin: 0 0 18px; }
+    h1 {
+      margin: 0;
+      max-width: 760px;
+      font-size: clamp(3.15rem, 7vw, 7.3rem);
+      line-height: .91;
+      letter-spacing: -.065em;
+      font-weight: 500;
+    }
+    .hero-copy { max-width: 690px; }
+    .hero-copy > p:last-of-type {
+      margin: 28px 0 0;
+      max-width: 600px;
+      color: var(--muted);
+      font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+    }
+    .hero-board {
+      position: relative;
+      padding: 28px 28px 32px;
+      background: var(--panel);
+      border: 1px solid var(--line-strong);
+      box-shadow: var(--shadow);
+    }
+    .hero-board::before, .hero-board::after {
+      content: "";
+      position: absolute;
+      width: 18px; height: 18px;
+    }
+    .hero-board::before { left: -1px; top: -1px; border-left: 3px solid var(--accent); border-top: 3px solid var(--accent); }
+    .hero-board::after { right: -1px; bottom: -1px; border-right: 3px solid var(--accent); border-bottom: 3px solid var(--accent); }
+    .board-label { margin: 0 0 22px; color: var(--muted); font-size: .78rem; }
+    .big-stat { display: flex; align-items: baseline; gap: 12px; padding: 13px 0; border-top: 1px solid var(--line); }
+    .big-stat:first-of-type { border-top: 0; }
+    .big-stat strong { font-size: clamp(2.4rem, 5vw, 4.4rem); line-height: 1; font-weight: 500; letter-spacing: -.055em; white-space: nowrap; }
+    .big-stat span { color: var(--muted); font-size: .93rem; line-height: 1.25; }
+    .big-stat.accent strong { color: var(--accent); }
+    .board-note { margin: 22px 0 0; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .82rem; }
+
+    .sticky-nav-wrap { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+    .sticky-nav { width: min(1180px, calc(100% - 40px)); margin: 0 auto; display: flex; gap: 4px; padding: 10px 0; overflow: hidden; }
+    .nav-link { text-decoration: none; border: 0; background: transparent; color: var(--muted); padding: 8px 13px; font-family: "IBM Plex Mono", monospace; font-size: .76rem; white-space: nowrap; border-radius: 3px; transition: background .2s, color .2s; }
+    .nav-link:hover, .nav-link.active { background: var(--ink); color: var(--paper); }
+
+    section { scroll-margin-top: 74px; padding: 88px 0; border-bottom: 1px solid var(--line); }
+    .section-head { display: grid; grid-template-columns: 90px minmax(0, 1fr) minmax(240px, .62fr); gap: 28px; align-items: start; margin-bottom: 48px; }
+    .section-num { color: var(--accent); font-size: .78rem; padding-top: 8px; }
+    h2 { margin: 0; max-width: 740px; font-size: clamp(2.35rem, 4.7vw, 4.7rem); line-height: .98; letter-spacing: -.05em; font-weight: 500; }
+    .section-deck { margin: 7px 0 0; color: var(--muted); font-size: 1.05rem; }
+    .cite { font-family: "IBM Plex Mono", monospace; font-size: .67em; vertical-align: super; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+
+    .flow-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: start; }
+    .flow-card { border-top: 3px solid var(--ink); padding: 18px 0 0; }
+    .flow-card.health { border-color: var(--teal); }
+    .flow-card.rd { border-color: var(--accent); }
+    .flow-card .micro { color: var(--muted); font-size: .7rem; margin-bottom: 14px; }
+    .flow-value { font-size: clamp(2.7rem, 5vw, 4.9rem); line-height: 1; letter-spacing: -.055em; margin: 0 0 8px; font-weight: 500; }
+    .flow-title { font-size: 1.12rem; font-weight: 600; margin: 0 0 6px; }
+    .flow-year { color: var(--muted); font-size: .83rem; }
+    .ratio { margin-top: 24px; }
+    .ratio-label { display: flex; justify-content: space-between; gap: 14px; color: var(--muted); font-size: .79rem; margin-bottom: 7px; }
+    .ratio-label strong { color: var(--ink); font-family: "IBM Plex Mono", monospace; font-weight: 500; }
+    .ratio svg { width: 100%; height: 12px; display: block; overflow: visible; }
+    .ratio .track { stroke: var(--paper-2); stroke-width: 10; }
+    .ratio .fill-world { stroke: var(--ink); stroke-width: 10; }
+    .ratio .fill-health { stroke: var(--teal); stroke-width: 10; }
+    .ratio .fill-rd { stroke: var(--accent); stroke-width: 10; }
+    .ratio line { stroke-linecap: butt; }
+
+    .us-strip { margin-top: 56px; display: grid; grid-template-columns: 1.2fr repeat(3, 1fr); border: 1px solid var(--line); background: var(--panel); }
+    .us-cell { padding: 22px; border-left: 1px solid var(--line); }
+    .us-cell:first-child { border-left: 0; background: var(--paper-2); }
+    .us-cell .micro { color: var(--muted); font-size: .68rem; }
+    .us-cell strong { display: block; font-size: clamp(1.65rem, 3vw, 2.55rem); line-height: 1.1; letter-spacing: -.04em; margin: 12px 0 4px; font-weight: 500; }
+    .us-cell p { margin: 0; color: var(--muted); font-size: .83rem; }
+    .scope-note { margin: 14px 0 0; color: var(--muted); font-size: .78rem; max-width: 860px; }
+
+    .system-map { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line-strong); background: var(--panel); }
+    .system-node { position: relative; min-height: 250px; padding: 22px 18px 20px; border-left: 1px solid var(--line); }
+    .system-node:first-child { border-left: 0; }
+    .system-node::after { content: "→"; position: absolute; z-index: 2; right: -12px; top: 25px; width: 24px; height: 24px; display: grid; place-items: center; background: var(--ink); color: var(--paper); border-radius: 50%; font-family: "IBM Plex Mono", monospace; font-size: .75rem; }
+    .system-node:last-child::after { display: none; }
+    .system-node .micro { color: var(--accent); font-size: .65rem; }
+    .system-node h3 { margin: 24px 0 10px; font-size: 1.16rem; line-height: 1.15; }
+    .system-node p { margin: 0; color: var(--muted); font-size: .86rem; }
+    .system-node .capital { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-family: "IBM Plex Mono", monospace; font-size: .72rem; color: var(--ink); }
+    .bottleneck-strip { display: grid; grid-template-columns: 180px repeat(4, 1fr); margin-top: 18px; border-top: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong); }
+    .bottleneck-strip > div { padding: 18px 16px; border-left: 1px solid var(--line); font-size: .82rem; }
+    .bottleneck-strip > div:first-child { border-left: 0; color: var(--accent); font-family: "IBM Plex Mono", monospace; font-size: .7rem; text-transform: uppercase; letter-spacing: .07em; }
+    .bottleneck-strip strong { display: block; margin-bottom: 4px; }
+    .funding-scope { margin-top: 36px; padding: 24px; display: grid; grid-template-columns: 160px 1fr; gap: 28px; background: var(--paper-2); }
+    .funding-scope strong { color: var(--accent); font-size: 2rem; font-weight: 500; letter-spacing: -.04em; }
+    .funding-scope p { margin: 0; color: var(--muted); }
+
+    .myth-banner { display: grid; grid-template-columns: .9fr 1.1fr; gap: 0; border: 1px solid var(--line-strong); margin-bottom: 44px; background: var(--panel); }
+    .myth-old { padding: 28px; background: var(--paper-2); }
+    .myth-new { padding: 28px; }
+    .myth-path { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-family: "IBM Plex Mono", monospace; margin: 22px 0; }
+    .myth-path .n { font-size: clamp(1.4rem, 3vw, 2.3rem); }
+    .myth-path .arrow { color: var(--muted); }
+    .myth-old .stamp { display: inline-block; transform: rotate(-2deg); border: 2px solid var(--accent); color: var(--accent); padding: 5px 8px; font-family: "IBM Plex Mono", monospace; font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; }
+    .myth-banner h3 { margin: 0 0 8px; font-size: 1.2rem; }
+    .myth-banner p { margin: 0; color: var(--muted); font-size: .91rem; }
+
+    .funnel-tools { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 16px; }
+    .toggle { display: inline-flex; padding: 3px; border: 1px solid var(--line); background: var(--paper-2); }
+    .toggle button { border: 0; background: transparent; padding: 7px 12px; cursor: pointer; font-family: "IBM Plex Mono", monospace; font-size: .72rem; }
+    .toggle button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+    .funnel-note { color: var(--muted); font-size: .8rem; }
+    .funnel-frame { border: 1px solid var(--line); background: var(--panel); padding: 24px 24px 18px; }
+    #funnelChart { display: block; width: 100%; min-height: 390px; }
+    #funnelChart text { font-family: "IBM Plex Sans", sans-serif; fill: var(--ink); }
+    #funnelChart .mono { font-family: "IBM Plex Mono", monospace; }
+    #funnelChart .muted { fill: var(--muted); }
+    #funnelChart .grid { stroke: var(--line); stroke-width: 1; }
+    #funnelChart .bar { fill: var(--teal); }
+    #funnelChart .bar.hot { fill: var(--accent); }
+    #funnelChart .survivor { fill: var(--ink); }
+    #funnelChart .lost { fill: var(--accent); }
+    .mobile-funnel { display: none; }
+    .funnel-summary { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 18px; }
+    .summary-cell { padding: 18px; background: var(--paper-2); }
+    .summary-cell strong { display: block; font-size: 1.7rem; letter-spacing: -.04em; font-weight: 500; }
+    .summary-cell span { color: var(--muted); font-size: .82rem; }
+
+    .knowledge-wrap { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 30px; align-items: start; }
+    .knowledge-axis { position: sticky; top: 74px; }
+    .knowledge-axis p { margin: 0 0 18px; color: var(--muted); font-size: .9rem; }
+    .signal { display: flex; align-items: center; gap: 10px; font-size: .78rem; margin: 9px 0; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; flex: 0 0 auto; }
+    .dot.hyp { background: transparent; border: 2px solid var(--line-strong); }
+    .dot.part { background: var(--yellow); }
+    .dot.known { background: var(--teal); }
+    .stages { border-top: 1px solid var(--line-strong); }
+    .stage-row { display: grid; grid-template-columns: 110px 1fr 140px; gap: 22px; padding: 22px 0; border-bottom: 1px solid var(--line); align-items: start; }
+    .stage-row .stage-name { font-weight: 600; }
+    .stage-row .stage-name .micro { display: block; color: var(--accent); font-size: .64rem; margin-bottom: 5px; }
+    .stage-row p { margin: 0; }
+    .evidence-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+    .evidence-tags span { padding: 4px 7px; border: 1px solid var(--line); font-size: .72rem; color: var(--muted); }
+    .stage-size { font-family: "IBM Plex Mono", monospace; font-size: .72rem; color: var(--muted); text-align: right; }
+    .stage-size strong { display: block; font-family: "IBM Plex Sans", sans-serif; color: var(--ink); font-size: 1.2rem; font-weight: 500; margin-bottom: 3px; }
+
+    .leverage-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .leverage-card { position: relative; min-height: 230px; padding: 24px; border: 1px solid var(--line); background: var(--panel); }
+    .leverage-card .index { position: absolute; top: 18px; right: 20px; font-family: "IBM Plex Mono", monospace; font-size: .75rem; color: var(--accent); }
+    .leverage-card h3 { margin: 0 44px 10px 0; font-size: 1.35rem; line-height: 1.15; }
+    .leverage-card p { margin: 0; color: var(--muted); }
+    .leverage-card .move { margin-top: 24px; padding-top: 14px; border-top: 1px solid var(--line); font-size: .86rem; color: var(--ink); }
+    .leverage-card .move strong { color: var(--teal); }
+
+    .bottom-line { margin-top: 48px; padding: 34px; background: var(--ink); color: var(--paper); display: grid; grid-template-columns: .8fr 1.2fr; gap: 34px; align-items: start; }
+    .bottom-line .micro { color: var(--yellow); font-size: .7rem; }
+    .bottom-line p { margin: 0; font-size: clamp(1.35rem, 2.6vw, 2.2rem); line-height: 1.22; letter-spacing: -.025em; }
+
+    .sources { padding-bottom: 120px; }
+    .sources h2 { font-size: clamp(2.2rem, 4vw, 3.6rem); }
+    .source-list { counter-reset: source; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 30px; border-top: 1px solid var(--line-strong); }
+    .source-list li { list-style: none; counter-increment: source; display: grid; grid-template-columns: 30px 1fr; gap: 10px; padding: 16px 0; border-bottom: 1px solid var(--line); break-inside: avoid; }
+    .source-list li::before { content: counter(source, decimal-leading-zero); font-family: "IBM Plex Mono", monospace; color: var(--accent); font-size: .72rem; padding-top: 3px; }
+    .source-list a { text-decoration-thickness: 1px; text-underline-offset: 3px; font-size: .9rem; }
+    .source-list small { display: block; color: var(--muted); margin-top: 3px; }
+    .method { margin-top: 30px; max-width: 820px; color: var(--muted); font-size: .82rem; }
+
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; gap: 42px; min-height: auto; padding-top: 54px; }
+      .hero-board { max-width: 620px; }
+      .section-head { grid-template-columns: 60px 1fr; }
+      .section-deck { grid-column: 2; }
+      .flow-grid { grid-template-columns: 1fr; gap: 34px; }
+      .us-strip { grid-template-columns: repeat(2, 1fr); }
+      .us-cell:nth-child(3) { border-left: 0; border-top: 1px solid var(--line); }
+      .us-cell:nth-child(4) { border-top: 1px solid var(--line); }
+      .system-map { grid-template-columns: 1fr 1fr; }
+      .system-node { border-top: 1px solid var(--line); }
+      .system-node:nth-child(odd) { border-left: 0; }
+      .system-node:nth-child(-n+2) { border-top: 0; }
+      .system-node::after { display: none; }
+      .bottleneck-strip { grid-template-columns: 1fr 1fr; }
+      .bottleneck-strip > div:nth-child(odd) { border-left: 0; }
+      .bottleneck-strip > div:first-child { grid-column: 1 / -1; }
+      .funding-scope { grid-template-columns: 1fr; gap: 8px; }
+      .myth-banner { grid-template-columns: 1fr; }
+      .knowledge-wrap { grid-template-columns: 1fr; }
+      .funnel-summary { grid-template-columns: repeat(2, 1fr); }
+      .knowledge-axis { position: static; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 20px; }
+      .knowledge-axis p { grid-column: 1 / -1; }
+      .leverage-grid { grid-template-columns: 1fr; }
+      .bottom-line { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+      .page, .sticky-nav { width: min(100% - 28px, 1180px); }
+      .hero { padding: 42px 0 46px; }
+      h1 { font-size: clamp(3rem, 15vw, 5rem); }
+      .hero-board { padding: 20px; }
+      .big-stat { align-items: flex-start; flex-direction: column; gap: 5px; }
+      .sticky-nav { overflow: visible; flex-wrap: wrap; gap: 2px; padding: 6px 0; }
+      .nav-link { padding: 5px 8px; font-size: .68rem; }
+      section { padding: 64px 0; }
+      .section-head { grid-template-columns: 1fr; gap: 10px; margin-bottom: 34px; }
+      .section-deck { grid-column: auto; }
+      .section-num { padding-top: 0; }
+      .us-strip { grid-template-columns: 1fr; }
+      .us-cell, .us-cell:nth-child(n) { border-left: 0; border-top: 1px solid var(--line); }
+      .us-cell:first-child { border-top: 0; }
+      .system-map { grid-template-columns: 1fr; }
+      .system-node, .system-node:nth-child(n) { min-height: 0; border-left: 0; border-top: 1px solid var(--line); }
+      .system-node:first-child { border-top: 0; }
+      .bottleneck-strip { grid-template-columns: 1fr; }
+      .bottleneck-strip > div:nth-child(n) { border-left: 0; border-top: 1px solid var(--line); }
+      .bottleneck-strip > div:first-child { border-top: 0; }
+      .myth-old, .myth-new { padding: 22px; }
+      .funnel-tools { align-items: flex-start; flex-direction: column; }
+      #funnelChart { display: none; }
+      .funnel-frame { padding: 16px; }
+      .mobile-funnel { display: grid; gap: 14px; }
+      .mobile-stage { padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+      .mobile-stage:last-child { border-bottom: 0; }
+      .mobile-stage-head { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 7px; }
+      .mobile-stage strong { font-size: 1rem; }
+      .mobile-stage .n { font-family: "IBM Plex Mono", monospace; color: var(--teal); }
+      .mobile-stage .barline { width: 100%; height: 8px; background: var(--paper-2); }
+      .mobile-stage .barline i { display: block; height: 100%; background: var(--teal); min-width: 2px; }
+      .mobile-stage.hot .barline i, .mobile-stage.hot .n { background: var(--accent); color: var(--accent); }
+      .mobile-stage p { margin: 7px 0 0; color: var(--muted); font-size: .78rem; }
+      .funnel-summary { grid-template-columns: 1fr; }
+      .knowledge-axis { grid-template-columns: 1fr; }
+      .stage-row { grid-template-columns: 1fr; gap: 10px; }
+      .stage-size { text-align: left; }
+      .source-list { grid-template-columns: 1fr; }
+      .bottom-line { padding: 24px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero page">
+    <div class="hero-copy">
+      <p class="eyebrow">A finite system, not a slogan</p>
+      <h1>A $111 trillion world.<br>About seven out.</h1>
+      <p>Follow the latest annual snapshots of the economy, health and medicine invention—then follow 100 clinical programs until roughly seven become approved treatments.</p>
+    </div>
+    <aside class="hero-board" aria-label="Core map summary">
+      <p class="board-label micro">The map in three numbers</p>
+      <div class="big-stat"><strong>$111T</strong><span>world GDP<br>2024</span></div>
+      <div class="big-stat"><strong>$10.6T</strong><span>world health spending<br>2023</span></div>
+      <div class="big-stat accent"><strong>6.7%</strong><span>Phase I programs<br>eventually approved</span></div>
+      <p class="board-note">The top two numbers are annual flows. The last is a success rate across 10,954 drug–indication programs, 2014–2023.</p>
+    </aside>
+  </header>
+
+  <div class="sticky-nav-wrap" aria-label="Section navigation">
+    <nav class="sticky-nav">
+      <a class="nav-link active" href="#money">01 Money</a>
+      <a class="nav-link" href="#system">02 System</a>
+      <a class="nav-link" href="#funnel">03 Funnel</a>
+      <a class="nav-link" href="#information">04 Information</a>
+      <a class="nav-link" href="#leverage">05 Leverage</a>
+      <a class="nav-link" href="#sources">Sources</a>
+    </nav>
+  </div>
+
+  <main class="page">
+    <section id="money">
+      <div class="section-head">
+        <div class="section-num">01 / Money</div>
+        <h2>The care economy is vast. The invention layer is not.</h2>
+        <p class="section-deck">Keep the denominators straight: 9.6¢ of each world-output dollar goes to health; about 2.7¢ of each health dollar matches global pharma R&amp;D.</p>
+      </div>
+
+      <div class="flow-grid" aria-label="Annual economic flows">
+        <article class="flow-card">
+          <div class="micro">All economic output</div>
+          <p class="flow-value">$111.0T</p>
+          <p class="flow-title">World GDP</p>
+          <div class="flow-year">2024 · current US dollars <a class="cite" href="#source-1">[1]</a></div>
+          <div class="ratio">
+            <div class="ratio-label"><span>reference scale</span><strong>100%</strong></div>
+            <svg viewBox="0 0 500 12" role="img" aria-label="World GDP is the 100 percent reference"><line class="track" x1="0" y1="6" x2="500" y2="6"/><line class="fill-world" x1="0" y1="6" x2="500" y2="6"/></svg>
+          </div>
+        </article>
+        <article class="flow-card health">
+          <div class="micro">Care</div>
+          <p class="flow-value">$10.6T</p>
+          <p class="flow-title">Global health spending</p>
+          <div class="flow-year">2023 · latest WHO year <a class="cite" href="#source-2">[2]</a></div>
+          <div class="ratio">
+            <div class="ratio-label"><span>of world GDP*</span><strong>9.6%</strong></div>
+            <svg viewBox="0 0 500 12" role="img" aria-label="Global health spending is approximately 9.6 percent of 2024 world GDP"><line class="track" x1="0" y1="6" x2="500" y2="6"/><line class="fill-health" x1="0" y1="6" x2="48" y2="6"/></svg>
+          </div>
+        </article>
+        <article class="flow-card rd">
+          <div class="micro">Invention</div>
+          <p class="flow-value">≈$288B</p>
+          <p class="flow-title">Global pharma R&amp;D</p>
+          <div class="flow-year">2024 · commercial estimate <a class="cite" href="#source-4">[4]</a></div>
+          <div class="ratio">
+            <div class="ratio-label"><span>of health spending*</span><strong>2.7%</strong></div>
+            <svg viewBox="0 0 500 12" role="img" aria-label="Global pharma R and D is approximately 2.7 percent of global health spending"><line class="track" x1="0" y1="6" x2="500" y2="6"/><line class="fill-rd" x1="0" y1="6" x2="14" y2="6"/></svg>
+          </div>
+        </article>
+      </div>
+
+      <div class="us-strip" aria-label="United States economic flow callouts">
+        <div class="us-cell">
+          <div class="micro">The US slice</div>
+          <strong>26%</strong>
+          <p>of world GDP, using 2024 BEA GDP against the World Bank world total.</p>
+        </div>
+        <div class="us-cell">
+          <div class="micro">GDP</div>
+          <strong>$29.1T</strong>
+          <p>2024 annual average, current dollars <a class="cite" href="#source-3">[3]</a></p>
+        </div>
+        <div class="us-cell">
+          <div class="micro">Health</div>
+          <strong>$5.3T</strong>
+          <p>2024 · 18.0% of US GDP <a class="cite" href="#source-5">[5]</a></p>
+        </div>
+        <div class="us-cell">
+          <div class="micro">Two R&amp;D anchors</div>
+          <strong>$151.4B</strong>
+          <p>NIH $47.1B + PhRMA members $104.3B <a class="cite" href="#source-6">[6]</a><a class="cite" href="#source-7">[7]</a></p>
+        </div>
+      </div>
+      <p class="scope-note">*Cross-year ratios are orientation, not an accounting identity: world health spending is 2023; the GDP and R&amp;D figures are 2024. WHO global health spending, CMS US health spending and commercial industry R&amp;D also use different scopes. The US R&amp;D sum is two visible anchors, not the whole US ecosystem.</p>
+    </section>
+
+    <section id="system">
+      <div class="section-head">
+        <div class="section-num">02 / System</div>
+        <h2>Capital changes hands five times before a cure reaches a person.</h2>
+        <p class="section-deck">This is the institutional topology. It is a flow of evidence, rights and risk—not one clean ledger that can be summed without overlap.</p>
+      </div>
+      <div class="system-map" aria-label="Institutional flow from public funders to care delivery">
+        <article class="system-node">
+          <div class="micro">Fund</div>
+          <h3>Governments + philanthropy</h3>
+          <p>Set missions, fund public goods and absorb risk too early or too diffuse for markets.</p>
+          <div class="capital">Anchor: NIH $47.1B, FY2024</div>
+        </article>
+        <article class="system-node">
+          <div class="micro">Discover</div>
+          <h3>Universities + institutes</h3>
+          <p>Create mechanisms, targets, tools and talent. Outputs move through papers, patents, licenses and people.</p>
+          <div class="capital">Gate: reproducible human relevance</div>
+        </article>
+        <article class="system-node">
+          <div class="micro">Translate</div>
+          <h3>Biotech + venture</h3>
+          <p>Turn a finding into a product thesis, build a program and carry it through the thin middle.</p>
+          <div class="capital">Gate: investable proof</div>
+        </article>
+        <article class="system-node">
+          <div class="micro">Develop</div>
+          <h3>Pharma + trial networks</h3>
+          <p>Run expensive sequential experiments, manufacture at scale and assemble the regulatory evidence.</p>
+          <div class="capital">Industry core: ≈$288B, 2024</div>
+        </article>
+        <article class="system-node">
+          <div class="micro">Deliver</div>
+          <h3>Regulators + payers + care</h3>
+          <p>Decide whether evidence is sufficient, coverage is viable and the treatment can reach the right patient.</p>
+          <div class="capital">Gate: approval ≠ access</div>
+        </article>
+      </div>
+      <div class="bottleneck-strip" aria-label="Bottlenecks between institutions">
+        <div>Bottlenecks live between boxes</div>
+        <div><strong>Discovery → translation</strong>Reproducibility, ownership, incentives.</div>
+        <div><strong>Preclinical → clinical</strong>Human relevance, toxicology, financing.</div>
+        <div><strong>Phase II → III</strong>Efficacy signal, patient selection, conviction.</div>
+        <div><strong>Approval → delivery</strong>Diagnosis, coverage, supply, workflow.</div>
+      </div>
+      <div class="funding-scope">
+        <strong>$288B ≠ $400B</strong>
+        <p>The sourced $288B is a 2024 commercial estimate of <em>industry pharma R&amp;D</em>. A broader “$400B+ biomedical R&amp;D” frame may also include public agencies, universities, philanthropy, devices, diagnostics and other research—but those ledgers overlap through grants, contracts, licenses and acquisitions. This map therefore shows the $288B industry core plus named public anchors rather than asserting a false all-in total.</p>
+      </div>
+    </section>
+
+    <section id="funnel">
+      <div class="section-head">
+        <div class="section-num">03 / Funnel</div>
+        <h2>Start counting where the cohort becomes measurable.</h2>
+        <p class="section-deck">The defensible funnel begins at Phase I: 10,954 drug–indication programs observed from 2014–2023. The steepest gate is Phase II.</p>
+      </div>
+
+      <div class="myth-banner">
+        <div class="myth-old">
+          <div class="micro">The familiar picture</div>
+          <div class="myth-path" aria-label="The familiar 10,000 to 1 claim"><span class="n">10,000</span><span class="arrow">→</span><span>250</span><span class="arrow">→</span><span>5</span><span class="arrow">→</span><span>1</span></div>
+          <span class="stamp">Illustration, not probability</span>
+        </div>
+        <div class="myth-new">
+          <h3>Why it misleads</h3>
+          <p>It splices a chosen screening-library count onto an approvals count without tracking one cohort end to end. Screening may involve thousands or millions; that tells you little about the odds of a nominated drug. Treat early discovery as “many → few,” then use observed transition rates from Phase I onward. <a class="cite" href="#source-9">[9]</a></p>
+        </div>
+      </div>
+
+      <div class="funnel-tools">
+        <div class="toggle" aria-label="Funnel display mode">
+          <button id="survivorBtn" type="button" aria-pressed="true">Survivors</button>
+          <button id="lossBtn" type="button" aria-pressed="false">Losses</button>
+        </div>
+        <div class="funnel-note">Per 100 programs entering Phase I · stage widths share a zero baseline</div>
+      </div>
+      <div class="funnel-frame">
+        <svg id="funnelChart" viewBox="0 0 1000 390" role="img" aria-labelledby="funnelTitle funnelDesc">
+          <title id="funnelTitle">Clinical development survival funnel</title>
+          <desc id="funnelDesc">Of 100 drug indication programs entering Phase I, 47.3 reach Phase II, 13.2 reach Phase III, 7.3 reach regulatory filing, and 6.7 receive approval.</desc>
+        </svg>
+        <div class="mobile-funnel" id="mobileFunnel" aria-label="Mobile clinical development survival funnel"></div>
+      </div>
+      <div class="funnel-summary">
+        <div class="summary-cell"><strong>47.3%</strong><span>Phase I → II</span></div>
+        <div class="summary-cell"><strong>28.0%</strong><span>Phase II → III · sharpest gate</span></div>
+        <div class="summary-cell"><strong>55.0%</strong><span>Phase III → NDA/BLA</span></div>
+        <div class="summary-cell"><strong>91.8%</strong><span>NDA/BLA → approval</span></div>
+        <div class="summary-cell"><strong>6.7%</strong><span>Phase I → approval · overall</span></div>
+      </div>
+      <p class="scope-note">Cumulative counts are calculated from Citeline/Biomedtracker transition probabilities: 47.3%, 28.0%, 55.0%, and 91.8%. The unit is a drug–indication program, not a unique molecule. <a class="cite" href="#source-8">[8]</a></p>
+    </section>
+
+    <section id="information">
+      <div class="section-head">
+        <div class="section-num">04 / Information</div>
+        <h2>The pool shrinks as human truth accumulates.</h2>
+        <p class="section-deck">At the start, we know a molecule and a theory. At the end, we know a dose, a population, benefit, common harms—and still not every rare or long-term effect.</p>
+      </div>
+
+      <div class="knowledge-wrap">
+        <aside class="knowledge-axis">
+          <p>The evidence changes kind, not just quantity.</p>
+          <div class="signal"><span class="dot hyp"></span> Hypothesis / proxy</div>
+          <div class="signal"><span class="dot part"></span> First human signal</div>
+          <div class="signal"><span class="dot known"></span> Characterized evidence</div>
+        </aside>
+        <div class="stages">
+          <article class="stage-row">
+            <div class="stage-name"><span class="micro">Many → few</span>Discovery</div>
+            <div><p>Disease hypothesis, target, chemical or biological activity, and an early formulation idea. No human response is known.</p><div class="evidence-tags"><span>structure</span><span>in vitro activity</span><span>mechanism hypothesis</span></div></div>
+            <div class="stage-size"><strong>No fixed N</strong>strategic search</div>
+          </article>
+          <article class="stage-row">
+            <div class="stage-name"><span class="micro">IND gate</span>Preclinical</div>
+            <div><p>Animal toxicology and pharmacokinetics begin to answer whether human testing is reasonable—not whether the medicine works in humans.</p><div class="evidence-tags"><span>toxicity proxy</span><span>ADME / PK</span><span>dose estimate</span></div></div>
+            <div class="stage-size"><strong>No humans</strong>models only</div>
+          </article>
+          <article class="stage-row">
+            <div class="stage-name"><span class="micro">First in human</span>Phase I</div>
+            <div><p>Safety, tolerability and dose range become directly observable. Efficacy usually remains unknown or provisional.</p><div class="evidence-tags"><span>safety signal</span><span>dose</span><span>human PK</span></div></div>
+            <div class="stage-size"><strong>20–100</strong>participants</div>
+          </article>
+          <article class="stage-row">
+            <div class="stage-name"><span class="micro">Truth gate</span>Phase II</div>
+            <div><p>The first real test of whether the intervention changes disease in the intended patients. Dose is refined; short-term adverse effects widen.</p><div class="evidence-tags"><span>efficacy signal</span><span>target engagement</span><span>patient segment</span></div></div>
+            <div class="stage-size"><strong>Hundreds</strong>of patients</div>
+          </article>
+          <article class="stage-row">
+            <div class="stage-name"><span class="micro">Confirmation</span>Phase III</div>
+            <div><p>Benefit and risk are tested at scale against placebo or standard care across a broader patient population.</p><div class="evidence-tags"><span>comparative benefit</span><span>common harms</span><span>label evidence</span></div></div>
+            <div class="stage-size"><strong>300–3,000+</strong>participants</div>
+          </article>
+          <article class="stage-row">
+            <div class="stage-name"><span class="micro">Population scale</span>Post-market</div>
+            <div><p>Real-world effectiveness, adherence, access, interactions, rare harms and longer-term outcomes emerge only after approval.</p><div class="evidence-tags"><span>rare events</span><span>long-term effects</span><span>delivery reality</span></div></div>
+            <div class="stage-size"><strong>Millions</strong>potentially exposed</div>
+          </article>
+        </div>
+      </div>
+      <p class="scope-note">Stage purpose and participant ranges follow the FDA’s drug development process overview. <a class="cite" href="#source-10">[10]</a></p>
+    </section>
+
+    <section id="leverage">
+      <div class="section-head">
+        <div class="section-num">05 / Leverage</div>
+        <h2>The machine’s waste is late knowledge.</h2>
+        <p class="section-deck">The map suggests a sharper objective than “fund more drugs”: move decisive information earlier, before the largest sequential bets.</p>
+      </div>
+      <div class="leverage-grid">
+        <article class="leverage-card">
+          <span class="index">01</span>
+          <h3>Human relevance before humans</h3>
+          <p>Animal and cell models are proxies. The first question is whether the target and mechanism are causally relevant in human disease.</p>
+          <div class="move"><strong>Move earlier:</strong> human genetics, patient-derived models, tissue-level measurement.</div>
+        </article>
+        <article class="leverage-card">
+          <span class="index">02</span>
+          <h3>Mechanism before efficacy</h3>
+          <p>A negative Phase II result is ambiguous if no one knows whether the drug reached and changed the intended biology.</p>
+          <div class="move"><strong>Move earlier:</strong> target-engagement biomarkers, exposure–response evidence, interpretable failure criteria.</div>
+        </article>
+        <article class="leverage-card">
+          <span class="index">03</span>
+          <h3>Who benefits before “does it work?”</h3>
+          <p>Averaging across heterogeneous patients can erase a real effect—or manufacture one that does not travel.</p>
+          <div class="move"><strong>Move earlier:</strong> patient stratification, diagnostic readiness, prospective subgroup logic.</div>
+        </article>
+        <article class="leverage-card">
+          <span class="index">04</span>
+          <h3>Delivery before approval</h3>
+          <p>An approved medicine is not a delivered cure. Diagnosis, coverage, supply, clinician workflow and adherence are separate gates.</p>
+          <div class="move"><strong>Move earlier:</strong> design the care pathway while the evidence package is still being built.</div>
+        </article>
+      </div>
+      <div class="bottom-line">
+        <div class="micro">The operating question</div>
+        <p>What can we know at the 100-candidate stage that we currently discover only at the $100M decision?</p>
+      </div>
+    </section>
+
+    <section class="sources" id="sources">
+      <div class="section-head">
+        <div class="section-num">Notes</div>
+        <h2>Definitions before precision.</h2>
+        <p class="section-deck">The figures are the latest compatible snapshot found for this build; years and scopes are shown rather than blurred together.</p>
+      </div>
+      <ol class="source-list">
+        <li id="source-1"><div><a href="https://data.worldbank.org/?locations=1W-GA-LR-GB-DO" target="_blank" rel="noopener">World Bank — GDP (current US$)</a><small>World total, 2024.</small></div></li>
+        <li id="source-2"><div><a href="https://p4h.world/en/news/who-releases-2025-update-of-the-global-health-expenditure-database/" target="_blank" rel="noopener">WHO GHED 2025 update</a><small>Global current health expenditure through 2023.</small></div></li>
+        <li id="source-3"><div><a href="https://fred.stlouisfed.org/series/GDP" target="_blank" rel="noopener">BEA via FRED — US GDP</a><small>Quarterly SAAR; 2024 annual average used.</small></div></li>
+        <li id="source-4"><div><a href="https://www.biospace.com/business/undeterred-by-political-economic-headwinds-pharma-ups-r-d-investment-in-2024-and-beyond" target="_blank" rel="noopener">Evaluate Pharma via BioSpace</a><small>Commercial estimate of 2024 global pharma R&amp;D.</small></div></li>
+        <li id="source-5"><div><a href="https://www.cms.gov/data-research/statistics-trends-and-reports/national-health-expenditure-data/nhe-fact-sheet" target="_blank" rel="noopener">CMS — National Health Expenditure fact sheet</a><small>US health spending, 2024.</small></div></li>
+        <li id="source-6"><div><a href="https://www.science.org/content/article/final-nih-budget-2024-essentially-flat" target="_blank" rel="noopener">Science / AAAS — FY2024 NIH budget</a><small>$47.1B base budget.</small></div></li>
+        <li id="source-7"><div><a href="https://cdn.aglty.io/phrma/Report - PhRMA 2025 Annual Membership Survey - July 2025.pdf" target="_blank" rel="noopener">PhRMA 2025 Annual Membership Survey</a><small>Member R&amp;D, 2024.</small></div></li>
+        <li id="source-8"><div><a href="http://norstella.com/why-clinical-development-success-rates-falling/" target="_blank" rel="noopener">Citeline / Biomedtracker — development success rates</a><small>10,954 drug–indication programs, 2014–2023.</small></div></li>
+        <li id="source-9"><div><a href="http://www.phrma.org/sites/default/files/pdf/2014_PhRMA_PROFILE.pdf" target="_blank" rel="noopener">PhRMA 2014 industry profile</a><small>Source of the stylized “tens of thousands → one” framing.</small></div></li>
+        <li id="source-10"><div><a href="https://www.fda.gov/patients/learn-about-drug-and-device-approvals/drug-development-process" target="_blank" rel="noopener">FDA — drug development process</a><small>Stage purposes and participant ranges.</small></div></li>
+      </ol>
+      <p class="method">Built as a static evidence map on October 3, 2026 PDT. Monetary values are nominal current US dollars. Asterisks flag cross-year orientation ratios. Funnel values are cumulative from the cited transition probabilities and rounded to one decimal; 100 × .473 × .280 × .550 × .918 = 6.7. Strategy cards are interpretations of the mapped information gaps, not measured effect-size claims.</p>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var stages = [
+        { name: 'Phase I', survivor: 100.0, transition: 'entry cohort' },
+        { name: 'Phase II', survivor: 47.3, transition: '47.3% advance' },
+        { name: 'Phase III', survivor: 13.2, transition: '28.0% advance' },
+        { name: 'NDA / BLA', survivor: 7.3, transition: '55.0% advance' },
+        { name: 'Approved', survivor: 6.7, transition: '91.8% approved' }
+      ];
+      var mode = 'survivor';
+      var svg = document.getElementById('funnelChart');
+      var mobile = document.getElementById('mobileFunnel');
+      var sBtn = document.getElementById('survivorBtn');
+      var lBtn = document.getElementById('lossBtn');
+
+      function svgEl(name, attrs, text) {
+        var el = document.createElementNS('http://www.w3.org/2000/svg', name);
+        Object.keys(attrs || {}).forEach(function (key) { el.setAttribute(key, attrs[key]); });
+        if (text !== undefined) el.textContent = text;
+        return el;
+      }
+
+      function renderChart() {
+        while (svg.firstChild && svg.firstChild.tagName !== 'title' && svg.firstChild.tagName !== 'desc') svg.removeChild(svg.firstChild);
+        Array.prototype.slice.call(svg.children).forEach(function (child) {
+          if (child.tagName !== 'title' && child.tagName !== 'desc') svg.removeChild(child);
+        });
+        var left = 205, maxW = 710, top = 36, rowH = 66;
+        [0, 25, 50, 75, 100].forEach(function (tick) {
+          var x = left + (tick / 100) * maxW;
+          svg.appendChild(svgEl('line', { x1: x, y1: 20, x2: x, y2: 340, class: 'grid' }));
+          svg.appendChild(svgEl('text', { x: x, y: 365, 'text-anchor': 'middle', class: 'mono muted', 'font-size': '12' }, tick));
+        });
+        stages.forEach(function (stage, i) {
+          var y = top + i * rowH;
+          var val = mode === 'survivor' ? stage.survivor : (i === 0 ? 0 : stages[i - 1].survivor - stage.survivor);
+          var width = Math.max(2, (val / 100) * maxW);
+          svg.appendChild(svgEl('text', { x: 0, y: y + 17, 'font-size': '17', 'font-weight': '600' }, stage.name));
+          svg.appendChild(svgEl('text', { x: 0, y: y + 37, class: 'muted mono', 'font-size': '12' }, stage.transition));
+          svg.appendChild(svgEl('rect', { x: left, y: y, width: maxW, height: 34, fill: 'var(--paper-2)' }));
+          svg.appendChild(svgEl('rect', { x: left, y: y, width: width, height: 34, class: mode === 'survivor' ? (i === 4 ? 'bar hot' : 'bar') : 'lost' }));
+          var label = mode === 'survivor' ? stage.survivor.toFixed(1) : val.toFixed(1);
+          svg.appendChild(svgEl('text', { x: Math.min(left + width + 10, 952), y: y + 23, class: 'mono', 'font-size': '14', 'font-weight': '500' }, label));
+        });
+        svg.appendChild(svgEl('text', { x: 985, y: 365, 'text-anchor': 'end', class: 'mono muted', 'font-size': '11' }, mode === 'survivor' ? 'programs surviving' : 'programs lost at gate'));
+      }
+
+      function renderMobile() {
+        mobile.innerHTML = '';
+        stages.forEach(function (stage, i) {
+          var val = mode === 'survivor' ? stage.survivor : (i === 0 ? 0 : stages[i - 1].survivor - stage.survivor);
+          var item = document.createElement('div');
+          item.className = 'mobile-stage' + (i === 4 || mode === 'loss' ? ' hot' : '');
+          item.innerHTML = '<div class="mobile-stage-head"><strong>' + stage.name + '</strong><span class="n">' + val.toFixed(1) + '</span></div><div class="barline"><i style="width:' + val + '%"></i></div><p>' + stage.transition + '</p>';
+          mobile.appendChild(item);
+        });
+      }
+
+      function setMode(next) {
+        mode = next;
+        sBtn.setAttribute('aria-pressed', String(mode === 'survivor'));
+        lBtn.setAttribute('aria-pressed', String(mode === 'loss'));
+        renderChart();
+        renderMobile();
+      }
+      sBtn.addEventListener('click', function () { setMode('survivor'); });
+      lBtn.addEventListener('click', function () { setMode('loss'); });
+      renderChart(); renderMobile();
+
+      var links = Array.prototype.slice.call(document.querySelectorAll('.nav-link'));
+      var sections = links.map(function (link) { return document.querySelector(link.getAttribute('href')); }).filter(Boolean);
+      if ('IntersectionObserver' in window) {
+        var observer = new IntersectionObserver(function (entries) {
+          var visible = entries.filter(function (entry) { return entry.isIntersecting; }).sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; })[0];
+          if (!visible) return;
+          links.forEach(function (link) { link.classList.toggle('active', link.getAttribute('href') === '#' + visible.target.id); });
+        }, { rootMargin: '-20% 0px -65% 0px', threshold: [0, .15, .3] });
+        sections.forEach(function (section) { observer.observe(section); });
+      }
+    })();
+  </script>
+</body>
+</html>
